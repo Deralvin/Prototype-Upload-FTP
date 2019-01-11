@@ -95,13 +95,13 @@ public class CameraUtils {
         File mediaStorageDir = new File(
                 Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                MainActivity.GALLERY_DIRECTORY_NAME);
+                PreviewCapture.GALLERY_DIRECTORY_NAME);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.e(MainActivity.GALLERY_DIRECTORY_NAME, "Oops! Failed create "
-                        + MainActivity.GALLERY_DIRECTORY_NAME + " directory");
+                Log.e(PreviewCapture.GALLERY_DIRECTORY_NAME, "Oops! Failed create "
+                        + PreviewCapture.GALLERY_DIRECTORY_NAME + " directory");
                 return null;
             }
         }
@@ -111,12 +111,12 @@ public class CameraUtils {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         File mediaFile;
-        if (type == MainActivity.MEDIA_TYPE_IMAGE) {
+        if (type == PreviewCapture.MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "IMG_" + timeStamp + "." + MainActivity.IMAGE_EXTENSION);
-        } else if (type == MainActivity.MEDIA_TYPE_VIDEO) {
+                    + "IMG_" + timeStamp + "." + PreviewCapture.IMAGE_EXTENSION);
+        } else if (type == PreviewCapture.MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "VID_" + timeStamp + "." + MainActivity.VIDEO_EXTENSION);
+                    + "VID_" + timeStamp + "." + PreviewCapture.VIDEO_EXTENSION);
         } else {
             return null;
         }

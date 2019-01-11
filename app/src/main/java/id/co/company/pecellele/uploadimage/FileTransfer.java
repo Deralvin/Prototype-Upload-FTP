@@ -1,5 +1,6 @@
 package id.co.company.pecellele.uploadimage;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -11,7 +12,7 @@ import android.util.Log;
 
 public class FileTransfer {
 
-    public FTPClient mFTPClient = null;
+    public FTPClient mFTPClient = new FTPClient();
     private static final String TAG = null;
 
     public boolean ftpConnect(String host,String username,String password,int port)
@@ -20,11 +21,8 @@ public class FileTransfer {
             // FTPClient mFTPClient = new FTPClient();
             // connecting to the host
             mFTPClient.connect(host, port);
-
+            boolean status = mFTPClient.login(username, password);
             // now check the reply code, if positive mean connection success
-            if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                // login using user name & password
-                boolean status = mFTPClient.login(username, password);
 
                 /* Set File Transfer Mode
                  *
@@ -37,7 +35,7 @@ public class FileTransfer {
                 mFTPClient.enterLocalPassiveMode();
 
                 return status;
-            }
+
         } catch(Exception e) {
             Log.d(TAG, "Error: could not connect to host " + host );
         }
@@ -52,13 +50,14 @@ public class FileTransfer {
         try {
             //File f=new File("D:/img/abc.jpeg");
             FileInputStream srcFileStream = new FileInputStream(srcFilePath);
+            // change working directory to the destination directory
 
-// change working directory to the destination directory
-            if (ftpChangeDirectory(desDirectory)) {
-                status = mFTPClient.storeFile(desFileName, srcFileStream);
-            }
+            status = mFTPClient.storeFile(desFileName, srcFileStream);
+            Log.d("mv dir : ", String.valueOf(status));
+
 
             srcFileStream.close();
+            Log.d("Status DATA : ", String.valueOf(status));
             return status;
         } catch (Exception e) {
             Log.d(TAG, "upload failed");

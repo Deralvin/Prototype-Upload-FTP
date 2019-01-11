@@ -23,7 +23,7 @@ public class FileTransfer {
 
             // now check the reply code, if positive mean connection success
             if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                // login using username & password
+                // login using user name & password
                 boolean status = mFTPClient.login(username, password);
 
                 /* Set File Transfer Mode

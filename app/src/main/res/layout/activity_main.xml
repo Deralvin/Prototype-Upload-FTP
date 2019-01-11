@@ -1,44 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-    android:background="@color/colorAccent"
-    tools:context="id.co.company.pecellele.uploadimage.MainActivity">
-    <TextView
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:id="@+id/tvHeading"
-        android:text="Touch the icon below to upload file to server"
-        android:textColor="#fff"
-        android:textStyle="bold"/>
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <TextView
-        android:id="@+id/targeturi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Touch the icon below to upload file to server"
-        android:textColor="#fff"
-        android:layout_marginTop="100dp"
-        android:gravity="center"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        android:layout_centerHorizontal="true"/>
+    </android.support.design.widget.AppBarLayout>
 
-    <Button
+    <include layout="@layout/content_main" />
 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/loadimage"
-        android:text="Upload"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:textColor="#fff"
-        android:background="#039be5"/>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

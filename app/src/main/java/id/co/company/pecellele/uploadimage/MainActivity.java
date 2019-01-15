@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +27,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 public class MainActivity extends AppCompatActivity {
 
 
-    private Button btnCapturePicture;
+    private FloatingActionButton btnCapturePicture;
     MQTTHelper mqttHelper;
 
 
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        btnCapturePicture = findViewById(R.id.btnCapturePicture);
+        btnCapturePicture = findViewById(R.id.btnPhoto);
 
 
         /**

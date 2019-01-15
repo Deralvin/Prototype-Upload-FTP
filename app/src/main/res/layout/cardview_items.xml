@@ -1,0 +1,37 @@
+<android.support.v7.widget.CardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="@dimen/dimen_8"
+    app:contentPadding="@dimen/cardview_default_radius"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/card_photo"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:srcCompat="@drawable/placeholder" />
+
+        <TextView
+            android:id="@+id/card_poster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Photo by ....."
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/card_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="Lokasi"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

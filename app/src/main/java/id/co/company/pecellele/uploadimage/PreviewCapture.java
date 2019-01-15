@@ -5,18 +5,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -50,6 +50,7 @@ public class PreviewCapture extends AppCompatActivity {
     public static final String VIDEO_EXTENSION = "mp4";
 
     private static String imageStoragePath;
+    private static long imageSize;
 
     private TextView txtDescription;
     private ImageView imgPreview;
@@ -92,32 +93,21 @@ public class PreviewCapture extends AppCompatActivity {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              try {
-                  if (imageStoragePath.length()==0){
-                      Toast.makeText(PreviewCapture.this, "Please Take A picture"+imageStoragePath, Toast.LENGTH_SHORT).show();
-                  }else{
-                      Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
-                      try {
-                          FileTransfer fr = new FileTransfer();
-                          String Host = "ftp.pptik.id";
-                          String User = "ftp.pptik.id|ftppptik";
-                          String PW = "XxYyZz123!";
-                          fr.ftpConnect(Host,User,PW,21);
+                try {
+                    if (imageStoragePath.length()==0){
+                        Toast.makeText(PreviewCapture.this, "Please Take A picture"+imageStoragePath, Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
+                        FileTransfer fs = new FileTransfer();
+                     new FtpTask().execute();
 
-                          try {
-                              fr.ftpUpload(imageStoragePath,"Tetsing.jpg","/");
-                              Toast.makeText(PreviewCapture.this, "Success Uploaded", Toast.LENGTH_SHORT).show();
-                          }catch (Exception e){
-                            e.printStackTrace();
-                          }
-                      }catch (Exception e){
-                        e.printStackTrace();
-                      }
 
-                  }
-              }catch (Exception e){
-                  Toast.makeText(PreviewCapture.this, "Please Take A picture", Toast.LENGTH_SHORT).show();
-              }
+
+                    }
+                }catch (Exception e){
+                    Toast.makeText(PreviewCapture.this, "Please Take A picture", Toast.LENGTH_SHORT).show();
+                    Log.d("Gagak Uplaod","Could error " +e);
+                }
             }
         });
         /**
@@ -330,5 +320,37 @@ public class PreviewCapture extends AppCompatActivity {
 
                     }
                 }).show();
+    }
+
+    private class FtpTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            FileTransfer fs = new FileTransfer();
+            boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg");
+            return ftp;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean ftpClient) {
+            Log.d("Sukses Terhubung","Berhasil Connection");
+            Toast.makeText(PreviewCapture.this, "Berhasil Connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class uploadData extends AsyncTask<Void, Void,Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            FileTransfer fs = new FileTransfer();
+            boolean upload = fs.ftpUpload(imageStoragePath,"Testing.jpg");
+            return upload;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            Log.d("Sukses Upload","Berhasil Upload");
+            Toast.makeText(PreviewCapture.this, "Berhasil Upload Gambar", Toast.LENGTH_SHORT).show();
+        }
     }
 }

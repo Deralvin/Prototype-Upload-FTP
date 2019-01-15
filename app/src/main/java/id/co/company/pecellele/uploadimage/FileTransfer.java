@@ -1,53 +1,59 @@
 package id.co.company.pecellele.uploadimage;
 
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.SocketException;
 
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
+import android.graphics.BitmapFactory;
 import android.util.Log;
+
+import com.google.gson.Gson;
 
 public class FileTransfer {
 
-    public FTPClient mFTPClient = new FTPClient();
+
     private static final String TAG = null;
 
-    public boolean ftpConnect(String host,String username,String password,int port)
-    {
+        public boolean ftpConnect(String srcFilePath, String desFileName){
         try {
-            // FTPClient mFTPClient = new FTPClient();
-            // connecting to the host
-            mFTPClient.connect(host, port);
-            boolean status = mFTPClient.login(username, password);
-            // now check the reply code, if positive mean connection success
+            String mBitmap =null;
+           FTPClient ftpClient = new FTPClient();
+            ftpClient.connect("ftp.pptik.id");
+            if(FTPReply.isPositiveCompletion(ftpClient.getReplyCode())){
+                boolean status1 = ftpClient.login("ftp.pptik.id|ftppptik","XxYyZz123!");
+                ftpClient.enterLocalPassiveMode();
+                Log.d("Connection success", "ftpConnect: berhasil status = "+status1);
 
-                /* Set File Transfer Mode
-                 *
-                 * To avoid corruption issue you must specified a correct
-                 * transfer mode, such as ASCII_FILE_TYPE, BINARY_FILE_TYPE,
-                 * EBCDIC_FILE_TYPE .etc. Here, I use BINARY_FILE_TYPE
-                 * for transferring text, image, and compressed files.
-                 */
-                mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
-                mFTPClient.enterLocalPassiveMode();
-
+                FileInputStream srcFileStream = new FileInputStream(srcFilePath);
+                BufferedInputStream bis = new BufferedInputStream(srcFileStream);
+                ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+                Gson gson = new Gson();
+                String json = gson.toJson(srcFileStream);
+                Log.d("FileName", srcFilePath);
+                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName, bis);
+                bis.close();
                 return status;
-
-        } catch(Exception e) {
-            Log.d(TAG, "Error: could not connect to host " + host );
+            }
+        } catch (SocketException e) {
+            Log.d("FTP1", "Error: could not connect to socket " + e );
+        } catch (IOException e) {
+            Log.d("FTP2", "Error: could not connect to host " + e );
         }
-
         return false;
     }
+
     /*fileupload*/
-    public boolean ftpUpload(String srcFilePath, String desFileName,
-                             String desDirectory)
+    public boolean ftpUpload(String srcFilePath, String desFileName)
     {
         boolean status = false;
         try {
+            FTPClient mFTPClient = new FTPClient();
             //File f=new File("D:/img/abc.jpeg");
             FileInputStream srcFileStream = new FileInputStream(srcFilePath);
             // change working directory to the destination directory
@@ -60,20 +66,20 @@ public class FileTransfer {
             Log.d("Status DATA : ", String.valueOf(status));
             return status;
         } catch (Exception e) {
-            Log.d(TAG, "upload failed");
+            Log.d("Gagal Upload", "upload failed"+e);
         }
 
         return status;
     }
-    public boolean ftpChangeDirectory(String directory_path)
-    {
-        try {
-            mFTPClient.changeWorkingDirectory(directory_path);
-        } catch(Exception e) {
-            Log.d(TAG, "Error: could not change directory to " + directory_path);
-        }
-
-        return false;
-    }
+//    public boolean ftpChangeDirectory(String directory_path)
+//    {
+//        try {
+//            mFTPClient.changeWorkingDirectory(directory_path);
+//        } catch(Exception e) {
+//            Log.d(TAG, "Error: could not change directory to " + directory_path);
+//        }
+//
+//        return false;
+//    }
 
 }

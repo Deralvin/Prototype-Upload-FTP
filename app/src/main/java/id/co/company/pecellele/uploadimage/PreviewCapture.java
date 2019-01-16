@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +25,13 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.List;
 
 public class PreviewCapture extends AppCompatActivity {
@@ -52,6 +59,7 @@ public class PreviewCapture extends AppCompatActivity {
     private static String imageStoragePath;
     private static long imageSize;
 
+    public static final String FILE_NAME=null;
     private TextView txtDescription;
     private ImageView imgPreview;
     private Button btnCapturePicture,btnUpload;
@@ -75,6 +83,9 @@ public class PreviewCapture extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreview);
         btnCapturePicture = findViewById(R.id.btnCapturePicture);
         btnUpload =  findViewById(R.id.upload);
+
+
+        BufferedWriter bufferedWriter=null;
         /**
          * Capture image on button click
          */
@@ -98,8 +109,8 @@ public class PreviewCapture extends AppCompatActivity {
                         Toast.makeText(PreviewCapture.this, "Please Take A picture"+imageStoragePath, Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
-                        FileTransfer fs = new FileTransfer();
-                     new FtpTask().execute();
+//                     new FtpTask().execute();
+                        new jsonFTP().execute();
 
 
 
@@ -320,6 +331,23 @@ public class PreviewCapture extends AppCompatActivity {
 
                     }
                 }).show();
+    }
+
+    private class jsonFTP extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+          FileTransfer ds = new FileTransfer();
+          File file = new File(getApplicationContext().getFilesDir()+"Data.json");
+          boolean jsonFtp = ds.ftpJson(String.valueOf(file),"nama-data.json");
+          return jsonFtp;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            Log.d("Sukses Terhubung","Berhasil Connection");
+            Toast.makeText(PreviewCapture.this, "Berhasil JSON", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class FtpTask extends AsyncTask<Void, Void, Boolean> {

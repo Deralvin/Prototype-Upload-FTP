@@ -27,6 +27,16 @@
             android:foreground="?attr/selectableItemBackground"
             android:text="@string/mvCapt"
             android:textColor="@android:color/white" />
+        <Button
+            android:id="@+id/testFolderFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_8"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="File check"
+            android:textColor="@android:color/white" />
 
         <!-- Record video button -->
 

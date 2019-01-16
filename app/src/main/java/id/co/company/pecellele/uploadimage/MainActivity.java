@@ -1,6 +1,8 @@
 package id.co.company.pecellele.uploadimage;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,10 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.File;
+import java.sql.Wrapper;
+
 public class MainActivity extends AppCompatActivity {
 
 
-    private Button btnCapturePicture;
+    private Button btnCapturePicture,testButton;
 
 
     @Override
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         btnCapturePicture = findViewById(R.id.btnCapturePicture);
-
+        testButton = findViewById(R.id.testFolderFile);
 
         /**
          * Capture image on button click
@@ -53,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File rootFile = getApplicationContext().getFilesDir();
+                Toast.makeText(MainActivity.this,  String.valueOf(rootFile), Toast.LENGTH_SHORT).show();
+            }
+        });
         /**
          * Record video on button click
          */

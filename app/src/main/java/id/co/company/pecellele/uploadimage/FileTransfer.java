@@ -2,18 +2,33 @@ package id.co.company.pecellele.uploadimage;
 
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.SocketException;
+import java.nio.Buffer;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.support.annotation.RequiresPermission;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
 public class FileTransfer {
 
@@ -45,6 +60,56 @@ public class FileTransfer {
         } catch (IOException e) {
             Log.d("FTP2", "Error: could not connect to host " + e );
         }
+        return false;
+    }
+    public boolean ftpJson(String srcFilePath, String desFileName){
+        JsonParser jsonParser = new JsonParser();
+        try {
+
+            FTPClient ftpClient = new FTPClient();
+            ftpClient.connect("ftp.pptik.id");
+            if(FTPReply.isPositiveCompletion(ftpClient.getReplyCode())){
+                boolean status1 = ftpClient.login("ftp.pptik.id|ftppptik","XxYyZz123!");
+                ftpClient.enterLocalPassiveMode();
+                Log.d("Connection success", "ftpConnect: berhasil status = "+status1);
+            FileTransfer fa = new FileTransfer();
+
+
+           OutputStream output = new FileOutputStream(srcFilePath);
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(output);
+            JSONObject obj = new JSONObject();
+            obj.put("name", "mkyong.com");
+            obj.put("age", new Integer(100));
+
+            JSONArray list = new JSONArray();
+            list.put("data");
+            list.put("data2");
+
+            obj.put("messages", list);
+
+                Log.d("dataJsonman", "ftpJson: "+obj);
+                outputStreamWriter.write(obj.toString());
+                Log.d("dataJsonman1", String.valueOf(Environment.getDataDirectory()));
+
+                FileInputStream fileInputStream = new FileInputStream(srcFilePath);
+            BufferedInputStream bis = new BufferedInputStream(fileInputStream);
+
+            boolean status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName,bis);
+                bis.close();
+                outputStreamWriter.close();
+            return status;
+            }
+
+//                fileWriter.write(obj.toString());
+//                Toast.makeText(PreviewCapture.this, "Data ini = "+fileWriter, Toast.LENGTH_SHORT).show();
+//
+////                fas= fa.ftpJson(fileWriter, "data.json");
+//                fileWriter.flush();
+
+        }catch (Exception e){
+            Log.d("jsonwrong", "doInBackground: "+e);
+        }
+
         return false;
     }
 

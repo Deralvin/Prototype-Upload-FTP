@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
         pAdapter.notifyDataSetChanged();
 
+
+
     }
 
     void startMQTT() {

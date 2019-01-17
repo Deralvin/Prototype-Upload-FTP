@@ -20,7 +20,7 @@
         <TextView
             android:id="@+id/txt_desc"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_height="210dp"
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/preview_description"
@@ -41,6 +41,18 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:visibility="gone" />
+        <EditText
+            android:layout_marginTop="25dp"
+            android:inputType="textMultiLine"
+            android:hint="Komentar"
+        android:lines="8"
+        android:minLines="4"
+        android:gravity="top|left"
+        android:maxLines="10"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:scrollbars="vertical"
+        />
     </LinearLayout>
 
     <LinearLayout

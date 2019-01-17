@@ -180,8 +180,10 @@ public class MQTTHelper {
     }
 
     public void publish(String topic_pub, String message) {
+
         try {
-            mqttAndroidClient.publish(topic_pub, message.getBytes(),0,false);
+            message = "ada";
+            mqttAndroidClient.publish(topic_pub,message.getBytes(),0,false);
         } catch (MqttException e) {
             e.printStackTrace();
 

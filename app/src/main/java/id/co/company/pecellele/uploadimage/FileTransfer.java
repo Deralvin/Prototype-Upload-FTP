@@ -2,7 +2,9 @@ package id.co.company.pecellele.uploadimage;
 
 
 import java.io.BufferedInputStream;
+import id.co.company.pecellele.uploadimage.MQTTHelper;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,26 +17,41 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
+import java.net.URISyntaxException;
 import java.nio.Buffer;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresPermission;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 
-public class FileTransfer {
 
+public class FileTransfer {
+    TelephonyManager telephonyManager;
+    MQTTHelper mqttHelper ;
+    SendToRMQ sendToRMQ = new SendToRMQ();
 
     private static final String TAG = null;
-
         public boolean ftpConnect(String srcFilePath, String desFileName){
         try {
             String mBitmap =null;
@@ -51,7 +68,22 @@ public class FileTransfer {
                 Gson gson = new Gson();
                 String json = gson.toJson(srcFileStream);
                 Log.d("FileName", srcFilePath);
+
                 boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName, bis);
+
+
+                JSONObject obj = new JSONObject();
+                obj.put("nama file","");
+                obj.put("telephone","085224609423");
+                obj.put("IMEI","990000862471854_351756051523999");
+                obj.put("ALAMAT","puri");
+                obj.put("provinsi","32");
+                obj.put("kabupaten","73");
+                obj.put("kelurahan","02");
+                obj.put("long","-6.87499");
+                obj.put("lat","107.5281");
+                String onjTo=obj.toString();
+                sendToRMQ.sendRMQFan(onjTo);
                 bis.close();
                 return status;
             }
@@ -59,11 +91,23 @@ public class FileTransfer {
             Log.d("FTP1", "Error: could not connect to socket " + e );
         } catch (IOException e) {
             Log.d("FTP2", "Error: could not connect to host " + e );
+        } catch (JSONException e) {
+            Log.d("FTP3", "Error: could not connect to host " + e );
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
         }
-        return false;
+            return false;
     }
-    public boolean ftpJson(String srcFilePath, String desFileName){
-        JsonParser jsonParser = new JsonParser();
+    public boolean ftpJson(String srcFilePath, String desFileName, File srcPathInternal){
+
         try {
 
             FTPClient ftpClient = new FTPClient();
@@ -72,32 +116,16 @@ public class FileTransfer {
                 boolean status1 = ftpClient.login("ftp.pptik.id|ftppptik","XxYyZz123!");
                 ftpClient.enterLocalPassiveMode();
                 Log.d("Connection success", "ftpConnect: berhasil status = "+status1);
-            FileTransfer fa = new FileTransfer();
 
-
-           OutputStream output = new FileOutputStream(srcFilePath);
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(output);
-            JSONObject obj = new JSONObject();
-            obj.put("name", "mkyong.com");
-            obj.put("age", new Integer(100));
-
-            JSONArray list = new JSONArray();
-            list.put("data");
-            list.put("data2");
-
-            obj.put("messages", list);
-
-                Log.d("dataJsonman", "ftpJson: "+obj);
-                outputStreamWriter.write(obj.toString());
-                Log.d("dataJsonman1", String.valueOf(Environment.getDataDirectory()));
-
-                FileInputStream fileInputStream = new FileInputStream(srcFilePath);
-            BufferedInputStream bis = new BufferedInputStream(fileInputStream);
-
-            boolean status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName,bis);
+                FileInputStream srcFileStream = new FileInputStream(srcFilePath);
+                BufferedInputStream bis = new BufferedInputStream(srcFileStream);
+                ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+                Gson gson = new Gson();
+                String json = gson.toJson(srcFileStream);
+                Log.d("FileName", srcFilePath);
+                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName, bis);
                 bis.close();
-                outputStreamWriter.close();
-            return status;
+                return status;
             }
 
 //                fileWriter.write(obj.toString());

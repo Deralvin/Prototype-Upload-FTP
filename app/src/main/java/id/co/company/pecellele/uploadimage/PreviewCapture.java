@@ -1,6 +1,8 @@
 package id.co.company.pecellele.uploadimage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,8 +12,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,13 +27,8 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 import java.util.List;
 
 public class PreviewCapture extends AppCompatActivity {
@@ -64,12 +61,15 @@ public class PreviewCapture extends AppCompatActivity {
     private ImageView imgPreview;
     private Button btnCapturePicture,btnUpload;
 
+    MQTTHelper mqttHelper;
 
+    SendToRMQ sendToRMQ =new SendToRMQ();
+    TelephonyManager tel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activty_upload);
-
+        tel =(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         // Checking availability of the camera
         if (!CameraUtils.isDeviceSupportCamera(getApplicationContext())) {
             Toast.makeText(getApplicationContext(),
@@ -109,14 +109,15 @@ public class PreviewCapture extends AppCompatActivity {
                         Toast.makeText(PreviewCapture.this, "Please Take A picture"+imageStoragePath, Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
-//                     new FtpTask().execute();
-                        new jsonFTP().execute();
-
+                        @SuppressLint("MissingPermission")
+                        String imei = tel.getDeviceId().toString();
+                        Toast.makeText(PreviewCapture.this, "Imei= +"+imei, Toast.LENGTH_SHORT).show();
+                        new FtpTask().execute();
 
 
                     }
                 }catch (Exception e){
-                    Toast.makeText(PreviewCapture.this, "Please Take A picture", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PreviewCapture.this, "Please Take A picture"+e, Toast.LENGTH_SHORT).show();
                     Log.d("Gagak Uplaod","Could error " +e);
                 }
             }
@@ -333,30 +334,32 @@ public class PreviewCapture extends AppCompatActivity {
                 }).show();
     }
 
-    private class jsonFTP extends AsyncTask<Void, Void, Boolean>{
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-          FileTransfer ds = new FileTransfer();
-          File file = new File(getApplicationContext().getFilesDir()+"Data.json");
-          boolean jsonFtp = ds.ftpJson(String.valueOf(file),"nama-data.json");
-          return jsonFtp;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            Log.d("Sukses Terhubung","Berhasil Connection");
-            Toast.makeText(PreviewCapture.this, "Berhasil JSON", Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private class jsonFTP extends AsyncTask<Void, Void, Boolean>{
+//
+//        @Override
+//        protected Boolean doInBackground(Void... voids) {
+//          FileTransfer ds = new FileTransfer();
+//            File file = new File(Environment.getExternalStorageDirectory()+File.separator+"temp-bawaslu");
+//           boolean jsonFtp = ds.ftpJson(file,"nama-data.json");
+//          return jsonFtp;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean aBoolean) {
+//            Log.d("Sukses Terhubung","Berhasil Connection");
+//            Toast.makeText(PreviewCapture.this, "Berhasil JSON", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     private class FtpTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            FileTransfer fs = new FileTransfer();
-            boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg");
-            return ftp;
+
+               FileTransfer fs = new FileTransfer();
+               boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg");
+               return ftp;
+
         }
 
         @Override
@@ -372,6 +375,7 @@ public class PreviewCapture extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
             FileTransfer fs = new FileTransfer();
             boolean upload = fs.ftpUpload(imageStoragePath,"Testing.jpg");
+
             return upload;
         }
 

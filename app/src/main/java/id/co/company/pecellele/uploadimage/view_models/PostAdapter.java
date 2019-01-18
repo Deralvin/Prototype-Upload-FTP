@@ -53,7 +53,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         holder.volunteer_postlocation.setText(
                 "Kode Provinsi " + post.getVolunteer_location_province() + "\n" +
                 "Kode Kelurahan " + post.getVolunteer_location_cityreg() + "\n" +
-                "Kode Kecamatan " + post.getVolunteer_location_cityreg() + "\n\n"
+                "Kode Kecamatan " + post.getVolunteer_location_district() + "\n"
         );
         holder.volunteer_postComment.setText("Komentar" + "\n\n" + post.getVolunteer_comment());
         Picasso.get().load(post.getVolunteer_photo()).into(holder.volunteer_photo);

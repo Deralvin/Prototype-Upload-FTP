@@ -29,8 +29,13 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private PostAdapter pAdapter;
+
+    private static final String PATH_TO_SERVER = "http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471854_351756051523998.csv";
 
 
     @Override
@@ -106,13 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillData() throws IOException {
 
-//        CSVReader reader = new CSVReader(new FileReader("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/04/3273021547479080_990000862471854_351756051523998.csv"));
-//        try {
-//            List myEntries = reader.readAll();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         Post post;
         post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471854_351756051523998.jpg",
                 "Jajang",
@@ -157,6 +157,32 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private List<String[]> downloadRemoteTextFileContent(){
+        URL mUrl = null;
+        List<String[]> csvLine = new ArrayList<>();
+        String[] content = null;
+        try {
+            mUrl = new URL(PATH_TO_SERVER);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        try {
+            assert mUrl != null;
+            URLConnection connection = mUrl.openConnection();
+            BufferedReader br = new BufferedReader(new
+                    InputStreamReader(connection.getInputStream()));
+            String line = "";
+            while((line = br.readLine()) != null){
+                content = line.split(",");
+                csvLine.add(content);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return csvLine;
     }
 
 }

@@ -32,6 +32,12 @@
             android:text="Lokasi"
             android:textSize="20dp" />
 
+        <TextView
+            android:id="@+id/card_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Komentar" />
+
     </LinearLayout>
 
 

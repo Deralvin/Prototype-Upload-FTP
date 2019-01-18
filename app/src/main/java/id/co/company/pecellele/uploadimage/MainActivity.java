@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -32,8 +33,13 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,13 +73,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(pAdapter);
 
-        startMQTT();
-
-        try {
-            fillData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
         // Checking availability of the camera
@@ -87,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnCapturePicture = findViewById(R.id.btnPhoto);
+
+        DownloadTask dt=new DownloadTask();
+        dt.execute("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471858_351756051523997.csv");
 
 
         /**
@@ -111,35 +113,47 @@ public class MainActivity extends AppCompatActivity {
         // otherwise the path will be null on device rotation
     }
 
-    private void fillData() throws IOException {
+    private class DownloadTask extends AsyncTask<String,Integer,Void> {
+        BufferedReader buffer;
 
-//        CSVReader reader = new CSVReader(new FileReader("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/04/3273021547479080_990000862471854_351756051523998.csv"));
-//        try {
-//            List myEntries = reader.readAll();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        protected Void doInBackground(String...params){
+            URL url;
+            try {
+                url = new URL(params[0]);
+                buffer = new BufferedReader(new InputStreamReader(url.openStream()));
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
+        protected void onPostExecute(Void result){
+            try {
+                Log.d("execute", "try");
+                fillData(buffer);
+            } catch (IOException e) {
+                Log.d("execute", "error" + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void fillData(BufferedReader in) throws IOException {
+
+        CSVReader reader = new CSVReader(in);
         Post post;
-        post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471854_351756051523998.jpg",
-                "Jajang",
-                "32",
-                "04",
-                "01");
-        postList.add(post);
-
-
-        post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471854_351756051523999.jpg",
-                "Jajang",
-                "32",
-                "04",
-                "01");
-        postList.add(post);
-
+        String[] nextRecord;
+        while ((nextRecord = reader.readNext()) != null) {
+            post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/" + nextRecord[0],
+                    nextRecord[1],
+                    nextRecord[3],
+                    nextRecord[4],
+                    nextRecord[5],
+                    nextRecord[8]
+            );
+            postList.add(post);
+        }
         pAdapter.notifyDataSetChanged();
-
-
-
     }
 
     void startMQTT() {

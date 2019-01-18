@@ -7,13 +7,15 @@ public class Post {
     private String volunteer_location_province;
     private String volunteer_location_cityreg;
     private String volunteer_location_district;
+    private String volunteer_comment;
 
-    public Post(String volunteer_photo, String volunteer_name, String volunteer_location_province, String volunteer_location_cityreg, String volunteer_location_district) {
+    public Post(String volunteer_photo, String volunteer_name, String volunteer_location_province, String volunteer_location_cityreg, String volunteer_location_district, String volunteer_comment) {
         this.volunteer_photo = volunteer_photo;
         this.volunteer_name = volunteer_name;
         this.volunteer_location_province = volunteer_location_province;
         this.volunteer_location_cityreg = volunteer_location_cityreg;
         this.volunteer_location_district = volunteer_location_district;
+        this.volunteer_comment = volunteer_comment;
     }
 
     public String getVolunteer_photo() {
@@ -54,5 +56,13 @@ public class Post {
 
     public void setVolunteer_location_district(String volunteer_location_district) {
         this.volunteer_location_district = volunteer_location_district;
+    }
+
+    public String getVolunteer_comment() {
+        return volunteer_comment;
+    }
+
+    public void setVolunteer_comment(String volunteer_comment) {
+        this.volunteer_comment = volunteer_comment;
     }
 }

@@ -47,12 +47,13 @@ import com.google.gson.JsonParser;
 
 
 public class FileTransfer {
-    TelephonyManager telephonyManager;
+
+    Long tsLong = System.currentTimeMillis()/1000;
     MQTTHelper mqttHelper ;
     SendToRMQ sendToRMQ = new SendToRMQ();
 
     private static final String TAG = null;
-        public boolean ftpConnect(String srcFilePath, String desFileName){
+        public boolean ftpConnect(String srcFilePath, String desFileName,String Imei){
         try {
             String mBitmap =null;
            FTPClient ftpClient = new FTPClient();
@@ -68,22 +69,30 @@ public class FileTransfer {
                 Gson gson = new Gson();
                 String json = gson.toJson(srcFileStream);
                 Log.d("FileName", srcFilePath);
+                String ts = tsLong.toString();
 
-                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+desFileName, bis);
+                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+ts+"_"+Imei+".jpg", bis);
 
 
                 JSONObject obj = new JSONObject();
-                obj.put("nama file","");
+                obj.put("nama file",ts+
+
+                        "_"+Imei+".jpg");
                 obj.put("telephone","085224609423");
-                obj.put("IMEI","990000862471854_351756051523999");
-                obj.put("ALAMAT","puri");
+                obj.put("IMEI",Imei);
                 obj.put("provinsi","32");
                 obj.put("kabupaten","73");
                 obj.put("kelurahan","02");
                 obj.put("long","-6.87499");
                 obj.put("lat","107.5281");
                 String onjTo=obj.toString();
-                sendToRMQ.sendRMQFan(onjTo);
+
+                if (status ==true){
+                    sendToRMQ.sendRMQFan(onjTo);
+
+                }else{
+                    Log.d("RMQERROR", "ftpConnect: Error data RMQ");
+                }
                 bis.close();
                 return status;
             }
@@ -140,6 +149,7 @@ public class FileTransfer {
 
         return false;
     }
+
 
     /*fileupload*/
     public boolean ftpUpload(String srcFilePath, String desFileName)

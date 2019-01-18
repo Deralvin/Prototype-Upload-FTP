@@ -1,44 +1,23 @@
 package id.co.company.pecellele.uploadimage;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 
 import com.opencsv.CSVReader;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +27,6 @@ import id.co.company.pecellele.uploadimage.view_models.PostAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
     private FloatingActionButton btnCapturePicture;
     MQTTHelper mqttHelper;
 
@@ -57,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private PostAdapter pAdapter;
+
+    private String csv_download_url = "http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471858_351756051523997.csv";
 
 
 
@@ -67,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.photostream);
 
+        /**
+         * Inititate Recycle View
+         */
         pAdapter = new PostAdapter(postList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -84,11 +66,14 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-
+        // Button Capture Camera
         btnCapturePicture = findViewById(R.id.btnPhoto);
 
+        /**
+         * Download Images Task
+         */
         DownloadTask dt=new DownloadTask();
-        dt.execute("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/32/73/02/3273021547479080_990000862471858_351756051523997.csv");
+        dt.execute(csv_download_url);
 
 
         /**
@@ -102,20 +87,19 @@ public class MainActivity extends AppCompatActivity {
              startActivity(intent);
             }
         });
-
-
-        /**
-         * Record video on button click
-         */
-
-
-        // restoring storage image path from saved instance state
-        // otherwise the path will be null on device rotation
     }
 
+    /**
+     * Downloader Task
+     */
     private class DownloadTask extends AsyncTask<String,Integer,Void> {
         BufferedReader buffer;
 
+        /**
+         * Download Task
+         * @param params
+         * @return
+         */
         protected Void doInBackground(String...params){
             URL url;
             try {
@@ -127,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
+        /**
+         * Execute after download
+         * @param result
+         */
         protected void onPostExecute(Void result){
             try {
                 Log.d("execute", "try");
@@ -138,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Download From CSV and put to Container
+     * @param in Buffered Reader from downloading CSV
+     * @throws IOException
+     */
     private void fillData(BufferedReader in) throws IOException {
 
         CSVReader reader = new CSVReader(in);
@@ -154,32 +147,6 @@ public class MainActivity extends AppCompatActivity {
             postList.add(post);
         }
         pAdapter.notifyDataSetChanged();
-    }
-
-    void startMQTT() {
-        mqttHelper = new MQTTHelper(getApplicationContext());
-        mqttHelper.setCallback(new MqttCallbackExtended() {
-            @Override
-            public void connectComplete(boolean b, String s) {
-
-            }
-
-            @Override
-            public void connectionLost(Throwable throwable) {
-
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("Debug",mqttMessage.toString());
-                Toast.makeText(getApplicationContext(),mqttMessage.toString(),Toast.LENGTH_LONG);
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-            }
-        });
     }
 
 }

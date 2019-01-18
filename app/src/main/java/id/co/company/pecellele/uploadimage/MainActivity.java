@@ -133,18 +133,23 @@ public class MainActivity extends AppCompatActivity {
      */
     private void fillData(BufferedReader in) throws IOException {
 
+        int i = 0;
+
         CSVReader reader = new CSVReader(in);
         Post post;
         String[] nextRecord;
         while ((nextRecord = reader.readNext()) != null) {
-            post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/" + nextRecord[0],
-                    nextRecord[1],
-                    nextRecord[3],
-                    nextRecord[4],
-                    nextRecord[5],
-                    nextRecord[8]
-            );
-            postList.add(post);
+            if(i > 0) {
+                post = new Post("http://filehosting.pptik.id/Bawaslu-Ftp-Testing/" + nextRecord[0],
+                        nextRecord[1],
+                        nextRecord[3],
+                        nextRecord[4],
+                        nextRecord[5],
+                        nextRecord[8]
+                );
+                postList.add(post);
+            }
+            i = i + 1;
         }
         pAdapter.notifyDataSetChanged();
     }

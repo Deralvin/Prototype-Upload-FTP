@@ -20,7 +20,7 @@
         <TextView
             android:id="@+id/txt_desc"
             android:layout_width="fill_parent"
-            android:layout_height="210dp"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/preview_description"
@@ -30,7 +30,7 @@
         <ImageView
             android:id="@+id/imgPreview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="210dp"
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
@@ -42,9 +42,11 @@
             android:layout_gravity="center_horizontal"
             android:visibility="gone" />
         <EditText
+            android:id="@+id/komentarPreview"
             android:layout_marginTop="25dp"
             android:inputType="textMultiLine"
             android:hint="Komentar"
+            android:visibility="gone"
         android:lines="8"
         android:minLines="4"
         android:gravity="top|left"

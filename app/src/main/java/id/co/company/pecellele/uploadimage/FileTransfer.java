@@ -40,6 +40,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresPermission;
 import android.telephony.TelephonyManager;
+import android.text.Editable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -53,7 +54,7 @@ public class FileTransfer {
     SendToRMQ sendToRMQ = new SendToRMQ();
 
     private static final String TAG = null;
-        public boolean ftpConnect(String srcFilePath, String desFileName,String Imei){
+        public boolean ftpConnect(String srcFilePath, String desFileName, String Imei, Editable Commentar){
         try {
             String mBitmap =null;
            FTPClient ftpClient = new FTPClient();
@@ -83,7 +84,7 @@ public class FileTransfer {
                 obj.put("Kelurahan","02");
                 obj.put("Long","-6.87499");
                 obj.put("Lat","107.5281");
-                obj.put("Komentar","lorem ipsum dolor sit amet");
+                obj.put("Komentar",Commentar.toString());
                 String onjTo=obj.toString();
 
                 if (status ==true){

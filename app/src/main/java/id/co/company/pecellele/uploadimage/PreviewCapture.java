@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +50,7 @@ public class PreviewCapture extends AppCompatActivity {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     // Bitmap sampling size
-    public static final int BITMAP_SAMPLE_SIZE = 8;
+    public static final int BITMAP_SAMPLE_SIZE = 1;
 
     // Gallery directory name to store the images or videos
     public static final String GALLERY_DIRECTORY_NAME = "Hello Camera";
@@ -63,6 +64,7 @@ public class PreviewCapture extends AppCompatActivity {
 
     public static final String FILE_NAME=null;
     private TextView txtDescription;
+    private EditText txtKonmentar;
     private ImageView imgPreview;
     private Button btnCapturePicture,btnUpload;
     static final Integer PHONESTATS = 0x1;
@@ -73,7 +75,7 @@ public class PreviewCapture extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activty_upload);
+       setContentView(R.layout.activty_upload);
 
         // Checking availability of the camera
         if (!CameraUtils.isDeviceSupportCamera(getApplicationContext())) {
@@ -88,6 +90,7 @@ public class PreviewCapture extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreview);
         btnCapturePicture = findViewById(R.id.btnCapturePicture);
         btnUpload =  findViewById(R.id.upload);
+        txtKonmentar =(EditText)findViewById(R.id.komentarPreview);
         /**
          * Capture image on button click
          */
@@ -114,6 +117,11 @@ public class PreviewCapture extends AppCompatActivity {
                     }else{
                         askForPermission(Manifest.permission.READ_PHONE_STATE, PHONESTATS);
                         Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
+                        if(txtKonmentar.length()<=0){
+                            txtKonmentar.setText("-");
+                        }else{
+
+                          }
                         new FtpTask().execute();
 
 
@@ -352,10 +360,11 @@ public class PreviewCapture extends AppCompatActivity {
             // hide video preview
             txtDescription.setVisibility(View.GONE);
             imgPreview.setVisibility(View.VISIBLE);
-
+            txtKonmentar.setVisibility(View.VISIBLE);
             Bitmap bitmap = CameraUtils.optimizeBitmap(BITMAP_SAMPLE_SIZE, imageStoragePath);
 
             imgPreview.setImageBitmap(bitmap);
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -408,7 +417,7 @@ public class PreviewCapture extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
 
                FileTransfer fs = new FileTransfer();
-               boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg",imei);
+               boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg",imei,txtKonmentar.getText());
                return ftp;
 
         }

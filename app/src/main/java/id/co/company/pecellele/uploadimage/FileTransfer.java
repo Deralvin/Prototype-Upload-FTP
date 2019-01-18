@@ -53,6 +53,13 @@ public class FileTransfer {
     MQTTHelper mqttHelper ;
     SendToRMQ sendToRMQ = new SendToRMQ();
 
+    String noTelp ="085224609423";
+    String longitude ="-6.87499";
+    String latitude = "107.5281";
+    String prov = "32";
+    String kota_kab ="73";
+    String kel ="02";
+
     private static final String TAG = null;
         public boolean ftpConnect(String srcFilePath, String desFileName, String Imei, Editable Commentar){
         try {
@@ -72,18 +79,18 @@ public class FileTransfer {
                 Log.d("FileName", srcFilePath);
                 String ts = tsLong.toString();
 
-                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/32/73/02/"+ts+"_"+Imei+".jpg", bis);
+                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+prov+"/"+kota_kab+"/"+kel+"/"+ts+"_"+Imei+".jpg", bis);
 
 
                 JSONObject obj = new JSONObject();
                 obj.put("Nama File",ts+"_"+Imei+".jpg");
-                obj.put("Telephone","085224609423");
+                obj.put("Telephone",noTelp);
                 obj.put("IMEI",Imei);
-                obj.put("Provinsi","32");
-                obj.put("Kabupaten","73");
-                obj.put("Kelurahan","02");
-                obj.put("Long","-6.87499");
-                obj.put("Lat","107.5281");
+                obj.put("Provinsi",prov);
+                obj.put("Kabupaten",kota_kab);
+                obj.put("Kelurahan",kel);
+                obj.put("Long",longitude);
+                obj.put("Lat",latitude);
                 obj.put("Komentar",Commentar.toString());
                 String onjTo=obj.toString();
 

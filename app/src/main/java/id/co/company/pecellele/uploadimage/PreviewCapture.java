@@ -1,15 +1,23 @@
 package id.co.company.pecellele.uploadimage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +32,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.List;
 
@@ -52,11 +61,15 @@ public class PreviewCapture extends AppCompatActivity {
     private static String imageStoragePath;
     private static long imageSize;
 
+    public static final String FILE_NAME=null;
     private TextView txtDescription;
     private ImageView imgPreview;
     private Button btnCapturePicture,btnUpload;
-
-
+    static final Integer PHONESTATS = 0x1;
+    MQTTHelper mqttHelper;
+    Long tsLong = System.currentTimeMillis()/1000;
+    SendToRMQ sendToRMQ =new SendToRMQ();
+    String imei;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +95,8 @@ public class PreviewCapture extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
+
                 if (CameraUtils.checkPermissions(getApplicationContext())) {
                     captureImage();
                 } else {
@@ -97,15 +112,14 @@ public class PreviewCapture extends AppCompatActivity {
                     if (imageStoragePath.length()==0){
                         Toast.makeText(PreviewCapture.this, "Please Take A picture"+imageStoragePath, Toast.LENGTH_SHORT).show();
                     }else{
+                        askForPermission(Manifest.permission.READ_PHONE_STATE, PHONESTATS);
                         Toast.makeText(PreviewCapture.this, "Execute Program : "+imageStoragePath, Toast.LENGTH_SHORT).show();
-                        FileTransfer fs = new FileTransfer();
-                     new FtpTask().execute();
-
+                        new FtpTask().execute();
 
 
                     }
                 }catch (Exception e){
-                    Toast.makeText(PreviewCapture.this, "Please Take A picture", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PreviewCapture.this, "Please Take A picture"+e, Toast.LENGTH_SHORT).show();
                     Log.d("Gagak Uplaod","Could error " +e);
                 }
             }
@@ -117,6 +131,55 @@ public class PreviewCapture extends AppCompatActivity {
         // restoring storage image path from saved instance state
         // otherwise the path will be null on device rotation
         restoreFromBundle(savedInstanceState);
+    }
+    @SuppressLint("MissingPermission")
+    private String getImeiNumber() {
+        final TelephonyManager telephonyManager= (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //getDeviceId() is Deprecated so for android O we can use getImei() method
+            return telephonyManager.getImei();
+        }
+        else {
+            return telephonyManager.getDeviceId();
+        }
+
+    }
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(PreviewCapture.this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should show an explanation
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PreviewCapture.this, permission)) {
+
+                ActivityCompat.requestPermissions(PreviewCapture.this, new String[]{permission}, requestCode);
+
+            } else {
+
+                ActivityCompat.requestPermissions(PreviewCapture.this, new String[]{permission}, requestCode);
+            }
+        } else {
+            imei = getImeiNumber();
+
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        switch (requestCode) {
+            case 1: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    imei = getImeiNumber();
+
+
+                } else {
+
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -322,13 +385,32 @@ public class PreviewCapture extends AppCompatActivity {
                 }).show();
     }
 
+//    private class jsonFTP extends AsyncTask<Void, Void, Boolean>{
+//
+//        @Override
+//        protected Boolean doInBackground(Void... voids) {
+//          FileTransfer ds = new FileTransfer();
+//            File file = new File(Environment.getExternalStorageDirectory()+File.separator+"temp-bawaslu");
+//           boolean jsonFtp = ds.ftpJson(file,"nama-data.json");
+//          return jsonFtp;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean aBoolean) {
+//            Log.d("Sukses Terhubung","Berhasil Connection");
+//            Toast.makeText(PreviewCapture.this, "Berhasil JSON", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
     private class FtpTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            FileTransfer fs = new FileTransfer();
-            boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg");
-            return ftp;
+
+               FileTransfer fs = new FileTransfer();
+               boolean ftp = fs.ftpConnect(imageStoragePath,"Testing.jpg",imei);
+               return ftp;
+
         }
 
         @Override
@@ -344,6 +426,7 @@ public class PreviewCapture extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
             FileTransfer fs = new FileTransfer();
             boolean upload = fs.ftpUpload(imageStoragePath,"Testing.jpg");
+
             return upload;
         }
 

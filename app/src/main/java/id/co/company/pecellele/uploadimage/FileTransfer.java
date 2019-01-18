@@ -71,20 +71,19 @@ public class FileTransfer {
                 Log.d("FileName", srcFilePath);
                 String ts = tsLong.toString();
 
-                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/"+ts+"_"+Imei+".jpg", bis);
+                boolean  status = ftpClient.storeFile("Bawaslu-Ftp-Testing/32/73/02/"+ts+"_"+Imei+".jpg", bis);
 
 
                 JSONObject obj = new JSONObject();
-                obj.put("nama file",ts+
-
-                        "_"+Imei+".jpg");
-                obj.put("telephone","085224609423");
+                obj.put("Nama File",ts+"_"+Imei+".jpg");
+                obj.put("Telephone","085224609423");
                 obj.put("IMEI",Imei);
-                obj.put("provinsi","32");
-                obj.put("kabupaten","73");
-                obj.put("kelurahan","02");
-                obj.put("long","-6.87499");
-                obj.put("lat","107.5281");
+                obj.put("Provinsi","32");
+                obj.put("Kabupaten","73");
+                obj.put("Kelurahan","02");
+                obj.put("Long","-6.87499");
+                obj.put("Lat","107.5281");
+                obj.put("Komentar","lorem ipsum dolor sit amet");
                 String onjTo=obj.toString();
 
                 if (status ==true){
